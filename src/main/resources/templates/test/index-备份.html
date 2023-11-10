@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- 必须的 meta 标签 -->
+    <meta charset="utf-8">
+    <!-- Bootstrap 的 CSS 文件 -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/fileinput.min.css}"/>
+    <!-- Bootstrap 的 JS 文件 -->
+    <script th:src="@{/jquery/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/fileinput.min.js}"></script>
+    <script th:src="@{/js/zh.js}"></script>
+    <title>只因...是个工具</title>
+</head>
+
+<style>
+    /*.location{*/
+    /*    position:absolute;*/
+    /*    top:30%;*/
+    /*    height:50%;*/
+    /*    transform:translate(60%,-50%);*/
+    /*}*/
+    .spanClass {
+        font-size: 25px;
+        font-style: italic;
+        color: red;
+    }
+
+    .spanClass2 {
+        font-size: 15px;
+        font-style: normal;
+        color: red;
+    }
+
+    .spanClass3 {
+        color: red;
+    }
+
+    .labelClass {
+        font-size: 20px;
+        font-style: inherit;
+        color: deeppink;
+    }
+    .buttonClass {
+        color: #fff;
+        background-color: #398439;
+        border-color: #255625;
+        width:200px;
+        height:60px;
+        font-size: 20px;
+        border-radius:10px;
+    }
+    .buttonContainer{
+        float: right;
+        clear: both;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+</style>
+<body th:style="'background-image: url(/image/holebackground.png)'">
+<br/><br/>
+<div class="buttonContainer">
+    <a target='_blank' th:href="'http://10.19.220.37:1024'"><button type="button" class="buttonClass">mq连接工具</button></a>
+</div>
+<!--<div class="buttonContainer">-->
+<!--    <a href ='/downloadReference3' target='_blank'><button type="button" class="buttonClass">ts/qm文件转换工具下载</button></a>-->
+<!--</div>-->
+<!--<div class="buttonContainer">-->
+<!--    <a href ='/downloadReference3' target='_blank'><button type="button" class="buttonClass">数字签名制作工具下载</button></a>-->
+<!--</div>-->
+<!--<div class="location">-->
+    <div class="modal-dialog modal-lg" role="document" >
+        <div class="modal-content">
+            <div class="modal-header" th:style="'background-image: url(/image/filebackground.png)'">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <select size="1" class="form-control input-lg" th:id="multipleSelect" onchange="extraParam()">
+                    <option value="0">-请选择业务类型-</option>
+                    <option value="1">1.根据Excel生成数据库文件</option>
+                    <option value="2">2.刷库：temp_newtable数据库更新</option>
+                    <option value="3">3.根据Excel文件生成JSON进行受控</option>
+                    <option value="4">4.语种译文匹配</option>
+                    <option value="5">5.转化key并过滤重复项</option>
+                    <option value="6">6.将properties文件内容映射到Excel中</option>
+                    <option value="7">7.ts文件转为Excel供翻译组翻译(英文)</option>
+                    <option value="8">8.根据Excel中的英文翻译替换ts文件中的中文</option>
+                    <option value="9">9.ts文件合规性检测value值缺失处理</option>
+                    <option value="10">10.压缩包校验文件生成</option>
+                    <option value="11">11.对比压缩包文件异同</option>
+<!--                    <option value="12">12.根据Excel生成语言包</option>-->
+                </select>
+                <h4 class="modal-title" id="myModalLabel" th:style="'color:white'"></h4>
+                <div th:id="idTypeModel" class="form-check" hidden>
+                    <label class="labelClass">id策略:</label>
+                    <input class="form-check-input" type="radio" name="idType" id="flexRadioDefault1" checked
+                           value="Serial" >
+                    <label class="form-check-label" for="flexRadioDefault1" th:style="'color:white'">
+                        自增
+                    </label>
+                    <input class="form-check-input" type="radio" name="idType" id="flexRadioDefault2" value="UUID">
+                    <label class="form-check-label" for="flexRadioDefault2" th:style="'color:white'">
+                        UUID
+                    </label>
+                </div>
+                <!--模态框-->
+                <div th:id="packageinfoModel" hidden>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" >
+                        填写packageinfo.xml文件生成信息
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <!-- 模态框内容 -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">packageinfo.xml文件信息表单</h4>
+                            <h5 class="modal-title spanClass3">压缩包中存在packageinfo.xml文件不需要填写该表单，以自带的packageinfo.xml文件内容为准，表单填写的内容不会生效。</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="myForm">
+                                <!-- 在这里放置表单字段 -->
+                                <div class="dropdown">
+                                    <!--包类型-->
+                                    <label th:for="type" data-toggle="tooltip" data-placement="top" title="支持资源包/语言包两种类型" class="spanClass3">*包类型</label>
+                                    <select size="1" class="form-control" th:id="type" onchange="packageTypeChange()">
+                                        <option value="">-请选择包类型-</option>
+                                        <option value="resourcePack">资源包</option>
+                                        <option value="languagePack">语言包</option>
+                                    </select>
+                                    <!--包id-->
+                                    <label th:for="id" data-toggle="tooltip" data-placement="top" title="根据包标识生成压缩包文件名前缀，建议使用英文" class="spanClass3">*包标识id</label>
+                                    <input type="text" th:id="id" class="form-control" placeholder="请输入内容">
+                                    <!--包版本-->
+                                    <label th:for="version" data-toggle="tooltip" data-placement="top" title="根据包标识生成压缩包文件名版本标识，书写规则按照海康规范，例如：1.0.0" class="spanClass3">*包版本</label>
+                                    <input type="text" th:id="version" class="form-control" placeholder="请输入内容">
+                                    <!--组件标识-->
+                                    <label th:for="componentId" data-toggle="tooltip" data-placement="top" title="组件标识" class="spanClass3">*组件标识</label>
+                                    <input type="text" th:id="componentId" class="form-control" placeholder="请输入内容">
+                                    <!--中文描述-->
+                                    <label th:for="displayName_zh_CN" data-toggle="tooltip" data-placement="top" title="对于压缩包的中文描述" class="spanClass3">*中文描述</label>
+                                    <input type="text" th:id="displayName_zh_CN" class="form-control" placeholder="请输入内容">
+                                    <!--英文描述-->
+                                    <label th:for="displayName_en_US" data-toggle="tooltip" data-placement="top" title="对于压缩包的英文描述">英文描述</label>
+                                    <input type="text" th:id="displayName_en_US" class="form-control" placeholder="请输入内容">
+                                    <!--最低适配版本-->
+                                    <label th:for="minor_version" data-toggle="tooltip" data-placement="top" title="压缩包的最低适配版本">最低适配版本</label>
+                                    <input type="text" th:id="minor_version" class="form-control" placeholder="请输入内容">
+                                    <!--最低适配版本异常提醒级别-->
+                                    <label th:for="minor_action" data-toggle="tooltip" data-placement="top" title="安装在最低适配版本以下时的异常级别，warn(警告但可安装)和reject(拒绝安装)两种选择，不选择默认为warn">最低适配版本异常级别</label>
+                                    <select size="1" class="form-control" th:id="minor_action">
+                                        <option value="">-请选择异常级别-</option>
+                                        <option value="warn">warn</option>
+                                        <option value="reject">reject</option>
+                                    </select>
+                                    <!--最高适配版本-->
+                                    <label th:for="major_version" data-toggle="tooltip" data-placement="top" title="压缩包的最低适配版本">最高适配版本</label>
+                                    <input type="text" th:id="major_version" class="form-control" placeholder="请输入内容">
+                                    <!--最高适配版本异常提醒级别-->
+                                    <label th:for="major_action" data-toggle="tooltip" data-placement="top" title="安装在最高适配版本以上时的异常级别，warn(警告但可安装)和reject(拒绝安装)两种选择，不选择默认为warn">最高适配版本异常级别</label>
+                                    <select size="1" class="form-control" th:id="major_action">
+                                        <option value="">-请选择异常级别-</option>
+                                        <option value="warn">warn</option>
+                                        <option value="reject">reject</option>
+                                    </select>
+                                    <!--语言-->
+                                    <div th:id="languagesDiv" hidden>
+                                        <label th:for="languages" data-toggle="tooltip" data-placement="top" title="压缩包的使用语言(语言包需要)">语言</label>
+                                        <select size="1" class="form-control" th:id="languages">
+                                            <option value="">-请选择语言-</option>
+                                            <option value="zh_CN">中文</option>
+                                            <option value="en_US">英文</option>
+                                        </select>
+                                    </div>
+                                    <!--解压目录-->
+                                    <label th:for="unpack_dir" data-toggle="tooltip" data-placement="top" title="压缩包安装后的解压目录，不填写默认./，表示组件根目录">解压目录</label>
+                                    <input type="text" th:id="unpack_dir" class="form-control" placeholder="请输入内容">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" onclick="saveFormData()">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <!-- 背景-->
+            <div class="modal-body" th:style="'background-image: url(/image/filebackground.png)'">
+                <input id='file' type='file' name="file"/>
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+    <span style="display:none" th:id="spansId">
+        <p th:id="pId" class="spanClass"></p>
+    </span>
+        <button type="button" class="btn btn-lg btn-success btn-upload-3"><i class="fa fa-upload"></i> 上传</button>
+        <button type="button" class="btn btn-lg btn-secondary btn-reset-3"><i class="fa fa-ban"></i> 清除</button>
+        <form th:action="@{/download}" method="post">
+            <input th:id="zipPath" type="text" name="zipPath" value="" style="display:none">
+            <input th:id="download" type="submit" class="btn btn-lg btn-warning btn-download-3" value="下载sql脚本"
+                   style="display:none">
+            <i class="fa fa-download"></i>
+            </input>
+        </form>
+
+    </div>
+<!--</div>-->
+<script>
+    //设置工具提示生效
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+    //获取单选框的内容
+    fodderType = function () {
+        return $("input[type='radio']:checked").val();
+    }
+
+    $("#file").fileinput({
+        uploadUrl: "/upload", // 服务器接收上传文件方法
+        language: "zh",                                   // 设置语言,需要引入对应的js文件
+        allowedFileExtensions: ['xls', 'xlsx','zip','ts','war'],
+        previewFileIcon: "<i class='glyphicon glyphicon-file'></i>",//不可读文件的预览文件图标
+        dropZoneTitle: '拖拽文件到这里 &hellip;<br>',
+        // 去掉上传和删除按钮
+        showUpload: false,
+        showRemove: false,
+        uploadAsync: false,//是指同步上传文件
+        maxFilePreviewSize: 1024000,//上传文件大小设置为1G[注：上传文件前后端都有限制，需要和后端配置文件中文件大小限制匹配]
+        preferIconicPreview: true, // 开启用图标替换预览效果
+        previewFileIconSettings: { // configure your icon file extensions
+            'doc': '<i class="fa fa-file-word-o text-primary"></i>',
+            'xls': '<i class="glyphicon glyphicon-file"></i>',
+            'ppt': '<i class="fa fa-file-powerpoint-o text-danger"></i>',
+            'pdf': '<i class="fa fa-file-pdf-o text-danger"></i>',
+            'txt': '<i class="fa fa-file-text-o text-info"></i>',
+            'zip': '<i class="fa fa-file-archive-o text-muted"></i>',
+            'htm': '<i class="fa fa-file-code-o text-info"></i>',
+            'mov': '<i class="fa fa-file-movie-o text-warning"></i>',
+            'mp3': '<i class="fa fa-file-audio-o text-warning"></i>'
+        },
+        previewFileExtSettings: {
+            'doc': function (ext) {
+                return ext.match(/(doc|docx)$/i);
+            },
+            'xls': function (ext) {
+                return ext.match(/(xls|xlsx)$/i);
+            },
+            'ppt': function (ext) {
+                return ext.match(/(ppt|pptx)$/i);
+            },
+            'zip': function (ext) {
+                return ext.match(/(zip|rar|tar|gzip|gz|7z)$/i);
+            },
+            'htm': function (ext) {
+                return ext.match(/(htm|html)$/i);
+            },
+            'mov': function (ext) {
+                return ext.match(/(avi|mpg|mkv|mov|mp4|3gp|webm|wmv)$/i);
+            },
+            'mp3': function (ext) {
+                return ext.match(/(mp3|wav)$/i);
+            },
+            'txt': function (ext) {
+                return ext.match(/(txt|ini|csv|java|php|js|css)$/i);
+            }
+        },
+        layoutTemplates: { // 预览图片按钮控制，这里屏蔽预览按钮
+            actionZoom: ''
+        },
+        enctype: 'multipart/form-data',//这个在携带附加参数的时候必须要有的
+        uploadExtraData: function () {   //额外参数的关键点
+            var obj = {};
+            obj.idType = fodderType();
+            obj.businessType = $("#multipleSelect").val();
+            let formData = saveFormData();
+            obj.包类型 = formData.包类型;
+            obj.id = formData.id;
+            obj.组件标识 = formData.组件标识;
+            obj.版本 = formData.版本;
+            obj.中文描述 = formData.中文描述;
+            obj.英文描述 = formData.英文描述;
+            obj.最低适配版本 = formData.最低适配版本;
+            obj.最低适配版本异常提醒级别 = formData.最低适配版本异常提醒级别;
+            obj.最高适配版本 = formData.最高适配版本;
+            obj.最高适配版本异常提醒级别 = formData.最高适配版本异常提醒级别;
+            obj.语言 = formData.语言;
+            obj.解压目录 = formData.解压目录;
+            //console.log(obj);
+            return obj;
+        }
+    }).on('fileuploaded', function (event, data, previewId, index) {
+        //注：当异步上传时该方法生效，fileuploaded字段对应异步
+        // console.log(event);
+        // console.log(data);
+        downloadFun(data);
+    }).on('filebatchuploadsuccess', function (event, data, previewId, index) {
+        //注：当同步上传时该方法生效，filebatchuploadsuccess字段对应同步
+        // console.log(event);
+        // console.log(data);
+        downloadFun(data);
+    });
+    $(".btn-upload-3").on("click", function () {
+        //清除错误提示
+        document.getElementById('spansId').setAttribute('style', 'display:none');
+        //清除下载按钮
+        document.getElementById('download').setAttribute('style', 'display:none');
+        $("#file").fileinput('upload');
+    });
+    $(".btn-reset-3").on("click", function () {
+        $("#file").fileinput('clear');
+    });
+
+    //下载表单处理
+    function downloadFun(data) {
+        //模拟清空按钮点击[清空输入框]
+        $(".btn-reset-3").click();
+        var response = data.response;
+        // console.log(response);
+        if (response.code === "200") {
+            var zipPath = response.data;
+            if (null != zipPath && "" !== zipPath) {
+                //传递zipPath,移除隐藏属性
+                //注意，对于这种直接需要操作标签属性的要用document获取，而$()这种jQurey形式无法获取
+                document.getElementById('zipPath').setAttribute('value', zipPath);
+                document.getElementById('download').removeAttribute('style');
+            }
+
+        } else {
+            let message = response.message;
+            // console.log(message);
+            $('#pId').text(message);
+            document.getElementById('spansId').removeAttribute('style');
+        }
+
+    }
+
+    //添加提交按钮监听，当提交按钮被点击之后隐藏
+    var button = document.getElementById('download');
+    button.addEventListener('click', hideshow);
+
+    function hideshow() {
+        //document.getElementById('zipPath').removeAttribute('value');
+        document.getElementById('download').setAttribute('style', 'display:none');
+    }
+
+    //控制语言的显示
+    function packageTypeChange(){
+        let packageType = $("#type").val();
+        if(packageType === "languagePack"){
+            document.getElementById('languagesDiv').removeAttribute('hidden');
+        }else{
+            document.getElementById('languagesDiv').setAttribute('hidden', 'hidden');
+        }
+    }
+
+    //保存模态框中的表单数据
+    function saveFormData() {
+        // 读取表单数据
+        var type = document.getElementById("type").value;
+        var id = document.getElementById("id").value;
+        var version = document.getElementById("version").value;
+        var componentId = document.getElementById("componentId").value;
+        var displayName_zh_CN = document.getElementById("displayName_zh_CN").value;
+        var displayName_en_US = document.getElementById("displayName_en_US").value;
+        var minor_version = document.getElementById("minor_version").value;
+        var minor_action = document.getElementById("minor_action").value;
+        var major_version = document.getElementById("major_version").value;
+        var major_action = document.getElementById("major_action").value;
+        var languages = document.getElementById("languages").value;
+        var unpack_dir = document.getElementById("unpack_dir").value;
+        // 将数据存储到变量中或进行其他操作
+        var data = {
+            包类型: type,
+            id: id,
+            版本: version,
+            组件标识: componentId,
+            中文描述: displayName_zh_CN,
+            英文描述: displayName_en_US,
+            最低适配版本: minor_version,
+            最低适配版本异常提醒级别: minor_action,
+            最高适配版本: major_version,
+            最高适配版本异常提醒级别: major_action,
+            语言: languages,
+            解压目录: unpack_dir
+        };
+        // console.log(data); // 输出到控制台，可以根据需求进行其他操作
+        // 关闭模态框
+        $('#myModal').modal('hide');
+        return data;
+    }
+
+    //不同的业务所需要的额外显示与参数
+    function extraParam() {
+        let businessType = $("#multipleSelect").val();
+        if(businessType == 0){
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            document.getElementById('myModalLabel').innerHTML = "";
+        }
+        if (businessType == 1) {
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>Excel文件要求：</p>Excel每个Sheet作为一个表，sheet名即为表名，支持同时建立多个sheet。主键id策略支持自增/UUID两种选择";
+            document.getElementById('download').setAttribute('value', '下载sql脚本');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            hideshow();//隐藏文件下载按钮
+        } else if (businessType == 2) {
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('download').setAttribute('value', '下载sql脚本');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            //设置超链接跳到模板页面，target属性设置_blank可以打开一个新窗口
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>Excel文件要求：</p>Excel模板格式参考Hirule刷新数据库历史译文Excel模板，详见<a href ='https://wiki.hikvision.com.cn/pages/viewpage.action?pageId=184648840' target='_blank'>wiki</a>";
+            hideshow();//隐藏文件下载按钮
+        } else if (businessType == 3) {
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            //设置超链接跳到模板页面，target属性设置_blank可以打开一个新窗口
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>Excel文件要求：</p>JSON导出按照key+中文形式，要求key的Excel标题以<b>key</b>命名，中文的Excel标题以<b>中文（简体）</b>命名，其余内容可随意设置。(参考Hirule平台字符串导出文件格式)<br/><p class='spanClass2'>注：支持key按照文件路径\\分割的方式(去除一级目录，\\替换为.后与hirule平台的key匹配)</p>";
+            document.getElementById('download').setAttribute('value', '下载JSON脚本');
+            hideshow();//隐藏文件下载按钮
+        } else if (businessType == 4) {
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            //设置超链接跳到模板页面，target属性设置_blank可以打开一个新窗口
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>Excel文件要求：</p>请按照模板内容进行相关信息添加：<a href ='/downloadReference' target='_blank'>模板下载</a><br/>模板分为三部分，<br/><b>译文记录：</b>添加提供的译文<br/><b>Hirule文件未翻译字段：</b>按照需要匹配的语种从Hirule平台上导出相应文档，将未翻译字段sheet页的内容添加到此处<br/><b>语种标题映射关系：</b>将两份问价语种标题的对应关系写在此处，用以进行匹配，key+中文的映射不可缺<br/><p class='spanClass2'>注：支持key按照文件路径\\分割的方式(去除一级目录，\\替换为.后与hirule平台的key匹配)</p>";
+            document.getElementById('download').setAttribute('value', '下载匹配文件');
+            hideshow();//隐藏文件下载按钮
+        } else if (businessType == 5) {
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            //设置超链接跳到模板页面，target属性设置_blank可以打开一个新窗口
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>Excel文件要求：</p>请按照模板内容进行相关信息添加：<a href ='/downloadReference2' target='_blank'>模板下载</a><br/><p class='spanClass2'>注：1.支持key按照文件路径\\分割的方式(去除一级目录，\\替换为.后与hirule平台的key匹配)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.导出文件分为三部分(全部key+中文)、(key相同且中文相同)、(key相同但中文不同)<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.对于某条key重复多次，且即存在中文相同页存在中文不同的情况，在(key相同且中文相同)、(key相同但中文不同)两个sheet页中都会加入<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;可参考模板中的示例</p>";
+            document.getElementById('download').setAttribute('value', '下载匹配文件');
+            hideshow();//隐藏文件下载按钮
+        }else if (businessType == 6) {
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            //设置超链接跳到模板页面，target属性设置_blank可以打开一个新窗口
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>文件格式要求：</p><p class='spanClass2'>注：1.Excel文件的第一列必须为key<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.properties文件的文件名与Excel的列名对应，每个Properties文件对应一种语言翻译<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.每种语言翻译按照Excel中的key进行匹配，properties文件中存在的话按照properties文件中的修改，否则保留Excel原有的值<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.将Excel文件与语言properties文件压缩后上传<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.Web,客户端，移动应用分开处理</p>";
+            document.getElementById('download').setAttribute('value', '下载匹配文件');
+            hideshow();//隐藏文件下载按钮
+        }else if (businessType == 7) {
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            //设置超链接跳到模板页面，target属性设置_blank可以打开一个新窗口
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>文件格式要求：</p><p class='spanClass2'>将Ts文件转化为Excel，提供翻译组翻译，扩展字段en_translation用来填写英文翻译</p>";
+            document.getElementById('download').setAttribute('value', '下载匹配文件');
+            hideshow();//隐藏文件下载按钮
+        }else if (businessType == 8) {
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            //设置超链接跳到模板页面，target属性设置_blank可以打开一个新窗口
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>文件格式要求：</p><p class='spanClass2'>上传zip包，内部包含中文ts文件以及对应Excel翻译，将Excel文件中的英文翻译替换到Ts中</p>";
+            document.getElementById('download').setAttribute('value', '下载匹配文件');
+            hideshow();//隐藏文件下载按钮
+        }else if(businessType == 9){
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>功能说明：</p><p class='spanClass2'>当ts文件受控存在value缺失的情况时，去除掉translation标签为空白的外层的message标签<br/>(注：生成的文件中会将标签内的文本中的换行符/n替换为空格符，请注意。)</p>";
+            document.getElementById('download').setAttribute('value', '下载匹配文件');
+            hideshow();//隐藏文件下载按钮
+        }else if(businessType == 10){
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').removeAttribute('hidden');
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>功能说明：</p><p>1.自动生成资源包/语言包的校验文件file_checksum.xml<br/>2.当上传压缩包中无packageinfo.xml文件或无META-INF文件夹时会自动生成<br/><p class='spanClass3'>注:packageinfo.xml文件是生成信息的重要来源，自动生成时请点击下方按钮填写必要的信息,packageinfo.xml存在则不需填写</p>";
+            document.getElementById('download').setAttribute('value', '下载文件');
+            hideshow();//隐藏文件下载按钮
+        } else if(businessType == 11){
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>功能说明：</p><p class='spanClass2'>1.对比两压缩包内文件异同<br/>2.主压缩包命名为mater,对照压缩包命名为slave<br/>3.支持war,zip两种格式压缩包</p>";
+            document.getElementById('download').setAttribute('value', '下载对比结果');
+            hideshow();//隐藏文件下载按钮
+        } else if(businessType == 12){
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>功能说明：</p><p class='spanClass2'>根据Excel生成语言包<br/>(注：将组件包和Excel翻译文档同时拖拽上传。)</p>";
+            document.getElementById('download').setAttribute('value', '下载语言包');
+            hideshow();//隐藏文件下载按钮
+        }
+
+    }
+</script>
+</body>
+</html>

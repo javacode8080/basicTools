@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- 必须的 meta 标签 -->
+    <meta charset="utf-8">
+    <!-- Bootstrap 的 CSS 文件 -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/fileinput.min.css}"/>
+    <!-- Bootstrap 的 JS 文件 -->
+    <script th:src="@{/jquery/jquery-2.1.1.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/fileinput.min.js}"></script>
+    <script th:src="@{/js/zh.js}"></script>
+    <title>Hello, world!</title>
+</head>
+<body>
+<h1>Hello, world!</h1>
+
+
+
+
+<form th:action="@{/testUp}" method="post" enctype="multipart/form-data">
+    <div>
+        <label class="form-label">上传Excel文件：Excel每个Sheet作为一个表，sheet名即为表名，支持同时建立多个sheet</label>
+        <input class="form-control form-control-lg" name="file" type="file">
+    </div>
+    <div class="form-check">
+        <label class="form-label">id策略</label><br/>
+        <input class="form-check-input" type="radio" name="idType" id="flexRadioDefault1" checked value="Serial">
+        <label class="form-check-label" for="flexRadioDefault1">
+            自增
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="idType" id="flexRadioDefault2" value="UUID" >
+        <label class="form-check-label" for="flexRadioDefault2">
+            UUID
+        </label>
+    </div>
+    <input type="submit" value="上传" >
+</form>
+
+
+
+
+
+<!--<button class="btn btn-primary" data-toggle="modal" data-target="#modal">上传头像</button>-->
+<!--<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="test modal">-->
+<!--    <div class="modal-dialog modal-lg" role="document">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+<!--                <h4 class="modal-title" id="myModalLabel">上传文件</h4>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <input type='file' id='file' multiple/>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    $("#file").fileinput({-->
+<!--        // 设置语言,需要引入对应的js文件-->
+<!--        language : "zh",-->
+<!--        allowedFileExtensions: ['xls', 'xlsx'],-->
+<!--        // 去掉上传和删除按钮-->
+<!--        showUpload : true,-->
+<!--        showRemove : true-->
+<!--    })-->
+<!--        // 选择文件时触发-->
+<!--        .on('filebatchselected', function (event, files) {-->
+<!--            // 将文件上传到服务器,具体方法参考 https://shendi.blog.csdn.net/article/details/111415361-->
+<!--            console.log(files[0]);-->
+
+<!--            // 上传完成后提示-->
+<!--        });-->
+<!--</script>-->
+</body>
+</html>

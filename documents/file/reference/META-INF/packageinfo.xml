@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<packageinfo docVersion="0.5.0" xmlns="http://www.hikvision.com/compomentModel/0.5.0/packageinfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.hikvision.com/compomentModel/0.5.0/packageinfo ../../schema/0.5.0/packageinfo.xsd">
+  <package type="" id="" version=""/>
+  <params>
+    <param id="displayName.zh_CN" value=""/>
+    <param id="displayName.en_US" value=""/>
+    <param id="component.id" value=""/>
+    <param id="component.compatibility.minor.version" value=""/>
+    <param id="component.compatibility.minor.action" value="warn"/>
+    <param id="component.compatibility.major.version" value=""/>
+    <param id="component.compatibility.major.action" value="warn"/>
+    <param id="languages" value=""/>
+    <param id="unpack.dir" value="./"/>
+  </params>
+</packageinfo>
