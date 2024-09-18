@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -19,15 +21,45 @@ import java.util.stream.Collectors;
 @SpringBootTest(classes = ExceltosqlApplication.class)
 public class test {
 
+    public static void mai1n(String[] args) {
+        String text = "我 的 i i i 是 珅 哦哦哦 o oo 好";
+
+        // 使用正则表达式匹配中英文字符串
+        Pattern pattern = Pattern.compile("(\\S+\\s*\\S+)");
+        Matcher matcher = pattern.matcher(text);
+
+        // 输出拆分后的字符串
+        while (matcher.find()) {
+            System.out.println(matcher.group());
+        }
+    }
+
+
+    public static void main(String[] args) {
+//        String input = "我love你.我love123你!@#";
+        String input = "انتهت مهلة الوصول بواسطة الوجه ورمز PIN INC INCA وبصمة الإصبع";
+        Pattern pattern = Pattern.compile("(\\S+\\s*\\S+)");
+        Matcher matcher = pattern.matcher(input);
+
+        while (matcher.find()) {
+            System.out.println(matcher.group());
+        }
+    }
 
     @Test
     public void test() throws IOException, IllegalAccessException {
 
-        String s = "C:\\Users\\sunjian23\\Desktop\\sdmc_vis_translate.properties";
-        FileToSqlServiceImpl service = new FileToSqlServiceImpl();
-        Map<String, String> stringStringMap = PropertiesUtil.propertiesToMap(s);
-        String s1 = service.propertiesWriteInExcel(s);
-        System.out.println(s1);
+        String s = "انتهت مهلة الوصول بواسطة الوجه ورمز PIN وبصمة الإصبع";
+
+
+//        HashSet<String> strings = new HashSet<>(null);
+//        System.out.println(strings);
+
+//        String s = "C:\\Users\\sunjian23\\Desktop\\sdmc_vis_translate.properties";
+//        FileToSqlServiceImpl service = new FileToSqlServiceImpl();
+//        Map<String, String> stringStringMap = PropertiesUtil.propertiesToMap(s);
+//        String s1 = service.propertiesWriteInExcel(s);
+//        System.out.println(s1);
     }
 
 
@@ -42,7 +74,11 @@ public class test {
 
     @Test
     public void test3() throws Exception {
-        METAINFUtil.generateFileChecksum("C:\\Users\\sunjian23\\Desktop\\cis_language_2.1.4.20230530093940\\META-INF", true);
+        String s = "72yD9wbnkQRM8wP51CRXoTE=";
+        byte[] decode = Base64.getDecoder().decode(s);
+
+        String value = String.valueOf(decode);
+        System.out.println(value);
     }
 
 
@@ -142,4 +178,55 @@ public class test {
 
     }
 
+    @Test
+    public void test6() throws Exception {
+        HashMap<String, Map<String, Double>> hashMap = new HashMap<>();
+        for (int i=0;i<5;i++){
+            Random rand = new Random();
+            HashMap<String, Double> hashMap1 = new HashMap<>();
+            if(i == 2){
+                hashMap1.put("statusRate",null);
+            }else{
+                hashMap1.put("statusRate",rand.nextDouble());
+            }
+            hashMap.put("status"+i,hashMap1);
+        }
+        hashMap = hashMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue((map1, map2) -> {
+                    Double value1 = map1.get("statusRate");
+                    Double value2 = map2.get("statusRate");
+                    if(value1 == null || value2 == null){
+                        return 1;
+                    }else{
+                        return -value1.compareTo(value2);
+                    }
+//                    if (value1 == null && value2 == null) {
+//                        return 0;
+//                    } else if (value1 == null) {
+//                        return 1;
+//                    } else if (value2 == null) {
+//                        return -1;
+//                    } else {
+//                        return -value1.compareTo(value2);
+//                    }
+                })).collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new));
+        System.out.println(hashMap);
+
+    }
+
+
+    @Test
+    public void test7() throws Exception {
+        Date date = new Date();
+        System.out.println(date);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_WEEK, -1); // 添加一天
+        Date datePlusOneDay = calendar.getTime(); // 获取新的日期
+        System.out.println(datePlusOneDay);
+    }
 }

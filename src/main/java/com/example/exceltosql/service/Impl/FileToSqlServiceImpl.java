@@ -636,4 +636,9 @@ public class FileToSqlServiceImpl {
     public String artemisRemoveInterfaceByserviceNameORgroupName(String filePath, List<String> serviceNameList, List<String> groupNameList) throws IOException {
         return ArtemisUtil.removeUnnecessaryInterfaceInformation(filePath, serviceNameList, groupNameList);
     }
+
+    public String makeDigitalSignature(String filePath, String originalFilename) {
+
+        return DigitalSignatureUtil.fileProcessing(filePath, originalFilename);
+    }
 }

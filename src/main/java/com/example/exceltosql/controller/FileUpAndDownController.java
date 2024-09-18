@@ -36,6 +36,8 @@ public class FileUpAndDownController {
         HttpResponseDto<String> result = HttpResponseDto.success(null);
         String zipPath = null;
         try {
+            //设置编码格式为UTF-8
+            request.setCharacterEncoding("utf-8");
             Map<String, String[]> parameterMap = request.getParameterMap();
             //获取业务功能
             String businessType = parameterMap.get("businessType")[0];
@@ -96,10 +98,17 @@ public class FileUpAndDownController {
             } else if (BusinessTypeEnum.ARTEMISREMOVEINTERFACEBYSERVICENAMEORGROUPNAME.getBusinessType().equals(businessType)) {
                 String filePath = fileToSqlService.fileUpload(request);
                 List<String> serviceNameList = new ArrayList<>(new HashSet<>(Arrays.asList(parameterMap.get("serviceName")[0].split(","))));
-                serviceNameList= serviceNameList.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
+                serviceNameList = serviceNameList.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
                 List<String> groupNameList = new ArrayList<>(new HashSet<>(Arrays.asList(parameterMap.get("groupName")[0].split(","))));
-                groupNameList= groupNameList.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
+                groupNameList = groupNameList.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
                 zipPath = fileToSqlService.artemisRemoveInterfaceByserviceNameORgroupName(filePath, serviceNameList, groupNameList);
+            } else if (BusinessTypeEnum.MAKEDIGITALSIGNATURE.getBusinessType().equals(businessType)) {
+                //上传文件
+
+                MultipartFile file = request.getFile("file");
+                String originalFilename = file.getOriginalFilename();
+                String filePath = fileToSqlService.fileUpload(request);
+                zipPath = fileToSqlService.makeDigitalSignature(filePath, originalFilename);
             }
             result.setData(zipPath);
             //文件返回到前端下载

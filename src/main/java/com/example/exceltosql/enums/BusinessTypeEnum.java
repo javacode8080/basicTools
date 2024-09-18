@@ -1,7 +1,6 @@
 package com.example.exceltosql.enums;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,11 +21,12 @@ public enum BusinessTypeEnum {
     TSTOEXCEL("7", "7.ts文件转为Excel文件供翻译组翻译(英文)"),
     EXCELTOTS("8", "8.Excel文件英文翻译替换ts文件中文"),
     REMOVEBLANKTAGS("9", "9.去除Ts文件中的空白<translation>标签"),
-    GENERATEMETAINFFILE("10","10.压缩包校验文件生成"),
+    GENERATEMETAINFFILE("10", "10.压缩包校验文件生成"),
     COMPAREFILE("11", "11.对比压缩包文件异同"),
     YAMLEXCELINTERCHANGE("12", "12.YAML/EXCEL互转(用于artemis资源包翻译)"),
     ARTEMISREMOVEINTERFACEBYSERVICENAMEORGROUPNAME("13", "13.根据提供方服务名称/服务分组去除artemis相关接口"),
-    GENERATELANGUAGEPACKSBASEDONEXCEL("14", "14.根据Excel生成语言包");
+    MAKEDIGITALSIGNATURE("14", "14.制作数字签名"),
+    GENERATELANGUAGEPACKSBASEDONEXCEL("15", "15.根据Excel生成语言包");;
     private String businessType;
     private String BusinessName;
 

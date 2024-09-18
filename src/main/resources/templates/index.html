@@ -101,7 +101,8 @@
                 <option value="11">11.对比压缩包文件异同</option>
                 <option value="12">12.YAML/EXCEL互转(用于artemis资源包翻译)</option>
                 <option value="13">13.根据提供方服务名称/服务分组去除artemis相关接口</option>
-                <!--<option value="14">14.根据Excel生成语言包</option>-->
+                <option value="14">14.制作数字签名</option>
+                <!--<option value="15">15.根据Excel生成语言包</option>-->
             </select>
             <h4 class="modal-title" id="myModalLabel" th:style="'color:white'"></h4>
             <div th:id="idTypeModel" class="form-check" hidden>
@@ -799,6 +800,15 @@
             document.getElementById('download').setAttribute('value', '下载yaml文件');
             hideshow();//隐藏文件下载按钮
         } else if (businessType == 14) {
+            document.getElementById('idTypeModel').removeAttribute('hidden');
+            document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
+            document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
+            document.getElementById('infoModelByArtemis').setAttribute('hidden', 'hidden');
+            document.getElementById('file-input').setAttribute('hidden', 'hidden');
+            document.getElementById('myModalLabel').innerHTML = "<p class='spanClass'>功能说明：</p><p class='spanClass2'>对zip文件制作数字签名(运管对上传的软件包进行数字签名校验)</p>";
+            document.getElementById('download').setAttribute('value', '下载文件');
+            hideshow();//隐藏文件下载按钮
+        } else if (businessType == 15) {
             document.getElementById('idTypeModel').removeAttribute('hidden');
             document.getElementById('idTypeModel').setAttribute('hidden', 'hidden');
             document.getElementById('packageinfoModel').setAttribute('hidden', 'hidden');
