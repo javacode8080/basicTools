@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -188,7 +189,8 @@ public class FileToSqlServiceImpl {
 //            response.setContentType("image/jpg");
                 response.setContentType("application/octet-stream");
                 //设置文件类型：这种方式是实现以附件下载
-                response.setHeader("Content-disposition", "attachment;filename=" + zipPath.substring(zipPath.lastIndexOf(File.separator) + 1));
+                String encodedFileName = URLEncoder.encode(zipPath.substring(zipPath.lastIndexOf(File.separator) + 1), "UTF-8").replaceAll("\\+", "%20");
+                response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName);
                 int len = 0;
                 byte[] bytes = new byte[1024];
                 while ((len = fileInputStream.read(bytes)) != -1) {
